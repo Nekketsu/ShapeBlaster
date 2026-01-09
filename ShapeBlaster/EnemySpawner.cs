@@ -1,0 +1,47 @@
+﻿using Microsoft.Xna.Framework;
+using System;
+
+namespace ShapeBlaster;
+
+static class EnemySpawner
+{
+    static float inverseSpawnChance = 60;
+
+    public static void Update()
+    {
+        if (!PlayerShip.Instance.IsDead && EntityManager.Count < 200)
+        {
+            if (Random.Shared.Next((int)inverseSpawnChance) == 0)
+            {
+                EntityManager.Add(Enemy.CreateSeeker(GetSpawnPosition()));
+            }
+            if (Random.Shared.Next((int)inverseSpawnChance) == 0)
+            {
+                EntityManager.Add(Enemy.CreateWanderer(GetSpawnPosition()));
+            }
+        }
+
+        // slowly increase the spawn rate as time progresses 
+        if (inverseSpawnChance > 20)
+        {
+            inverseSpawnChance -= 0.005f;
+        }
+    }
+
+    private static Vector2 GetSpawnPosition()
+    {
+        Vector2 pos;
+        do
+        {
+            pos = new Vector2(Random.Shared.Next((int)GameRoot.ScreenSize.X), Random.Shared.Next((int)GameRoot.ScreenSize.Y));
+        }
+        while (Vector2.DistanceSquared(pos, PlayerShip.Instance.Position) < 250 * 250);
+
+        return pos;
+    }
+
+    public static void Reset()
+    {
+        inverseSpawnChance = 60;
+    }
+}

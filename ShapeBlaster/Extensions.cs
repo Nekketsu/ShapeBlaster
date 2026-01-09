@@ -9,6 +9,9 @@ public static class Extensions
     {
         public float Angle =>
             float.Atan2(vector.Y, vector.X);
+
+        public Vector2 ScaleTo(float length) =>
+            vector * (length / vector.Length());
     }
 
     extension(Random random)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace ShapeBlaster;
@@ -18,6 +19,9 @@ class PlayerShip : Entity
     const int cooldownFrames = 6;
     int cooldownRemaining = 0;
 
+    int framesUntilRespawn = 0;
+    public bool IsDead => framesUntilRespawn > 0;
+
     private PlayerShip()
     {
         image = Art.Player;
@@ -27,6 +31,20 @@ class PlayerShip : Entity
 
     public override void Update()
     {
+        if (IsDead)
+        {
+            if (--framesUntilRespawn == 0)
+            {
+                if (PlayerStatus.Lives == 0)
+                {
+                    PlayerStatus.Reset();
+                    Position = GameRoot.ScreenSize / 2;
+                }
+            }
+
+            return;
+        }
+
         const float speed = 8;
         Velocity = speed * Input.GetMovementDirection();
         Position += Velocity;
@@ -52,11 +70,27 @@ class PlayerShip : Entity
 
             offset = Vector2.Transform(new Vector2(25, 8), aimQuat);
             EntityManager.Add(new Bullet(Position + offset, vel));
+
+            Sound.Shot.Play(0.2f, Random.Shared.NextFloat(-0.2f, 0.2f), 0);
         }
 
         if (cooldownRemaining > 0)
         {
             cooldownRemaining--;
         }
+    }
+
+    public override void Draw(SpriteBatch spriteBatch)
+    {
+        if (!IsDead)
+        {
+            base.Draw(spriteBatch);
+        }
+    }
+
+    public void Kill()
+    {
+        PlayerStatus.RemoveLife();
+        framesUntilRespawn = PlayerStatus.IsGameOver ? 300 : 120;
     }
 }
