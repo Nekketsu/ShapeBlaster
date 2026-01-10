@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BloomPostprocess;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -7,21 +8,32 @@ namespace ShapeBlaster;
 
 public class GameRoot : Game
 {
-    private GraphicsDeviceManager graphics;
-    private SpriteBatch spriteBatch;
-
     public static GameRoot Instance { get; private set; }
     public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
     public static Vector2 ScreenSize => new Vector2(Viewport.Width, Viewport.Height);
     public static GameTime GameTime { get; private set; }
 
+    private GraphicsDeviceManager graphics;
+    private SpriteBatch spriteBatch;
+    private BloomComponent bloom;
+
+    private bool paused = false;
+    private bool useBloom = true;
+
     public GameRoot()
     {
+        Instance = this;
+
         graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
-        Instance = this;
+        graphics.PreferredBackBufferWidth = 800;
+        graphics.PreferredBackBufferHeight = 600;
+
+        bloom = new BloomComponent(this);
+        Components.Add(bloom);
+        bloom.Settings = new BloomSettings(null, 0.25f, 4, 2, 1, 1.5f, 1);
     }
 
     protected override void Initialize()
@@ -53,21 +65,44 @@ public class GameRoot : Game
             Exit();
         }
 
-        PlayerStatus.Update();
-        EntityManager.Update();
-        EnemySpawner.Update();
+        if (Input.WasKeyPressed(Keys.P))
+        {
+            paused = !paused;
+        }
+        if (Input.WasKeyPressed(Keys.B))
+        {
+            useBloom = !useBloom;
+        }
+
+        if (!paused)
+        {
+            PlayerStatus.Update();
+            EntityManager.Update();
+            EnemySpawner.Update();
+        }
 
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
+        bloom.BeginDraw();
+        if (!useBloom)
+        {
+            base.Draw(gameTime);
+        }
+
         GraphicsDevice.Clear(Color.Black);
 
         // Draw entities. Sort by texture for better batching.
         spriteBatch.Begin(SpriteSortMode.Texture, BlendState.Additive);
         EntityManager.Draw(spriteBatch);
         spriteBatch.End();
+
+        if (useBloom)
+        {
+            base.Draw(gameTime);
+        }
 
         // Draw user interface
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
@@ -89,8 +124,6 @@ public class GameRoot : Game
         }
 
         spriteBatch.End();
-
-        base.Draw(gameTime);
     }
 
     private void DrawRightAlignedString(string text, float y)

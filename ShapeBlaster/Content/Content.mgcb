@@ -83,6 +83,24 @@
 #begin Fonts/NovaSquare-Regular.ttf
 /copy:Fonts/NovaSquare-Regular.ttf
 
+#begin Shaders/BloomCombine.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/BloomCombine.fx
+
+#begin Shaders/BloomExtract.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/BloomExtract.fx
+
+#begin Shaders/GaussianBlur.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/GaussianBlur.fx
+
 #begin Sound/explosion-01.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
