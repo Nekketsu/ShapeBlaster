@@ -12,6 +12,9 @@ static class Art
     public static Texture2D Pointer { get; private set; }
     public static Texture2D BlackHole { get; private set; }
 
+    public static Texture2D LineParticle { get; private set; }
+    public static Texture2D Glow { get; private set; }
+
     public static SpriteFont Font { get; private set; }
 
     public static void Load(ContentManager content)
@@ -22,6 +25,9 @@ static class Art
         Bullet = content.Load<Texture2D>("Art/Bullet");
         Pointer = content.Load<Texture2D>("Art/Pointer");
         BlackHole = content.Load<Texture2D>("Art/Black Hole");
+
+        LineParticle = content.Load<Texture2D>("Art/Laser");
+        Glow = content.Load<Texture2D>("Art/Glow");
 
         Font = content.Load<SpriteFont>("Fonts/Font");
     }

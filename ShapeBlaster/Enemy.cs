@@ -79,10 +79,29 @@ class Enemy : Entity
     public void WasShot()
     {
         IsExpired = true;
-        Sound.Explosion.Play(0.5f, Random.Shared.NextFloat(-0.2f, 0.2f), 0);
-
         PlayerStatus.AddPoints(PointValue);
         PlayerStatus.IncreaseMultiplier();
+
+        var hue1 = Random.Shared.NextFloat(0, 6);
+        var hue2 = (hue1 + Random.Shared.NextFloat(0, 2)) % 6f;
+        var color1 = ColorUtil.HSVToColor(hue1, 0.5f, 1);
+        var color2 = ColorUtil.HSVToColor(hue2, 0.5f, 1);
+
+        for (var i = 0; i < 120; i++)
+        {
+            var speed = 18f * (1f - 1 / Random.Shared.NextFloat(1f, 10f));
+            var state = new ParticleState()
+            {
+                Velocity = Random.Shared.NextVector2(speed, speed),
+                Type = ParticleType.Enemy,
+                LengthMultiplier = 1f
+            };
+
+            var color = Color.Lerp(color1, color2, Random.Shared.NextFloat(0, 1));
+            GameRoot.ParticleManager.CreateParticle(Art.LineParticle, Position, color, 190, 1.5f, state);
+        }
+
+        Sound.Explosion.Play(0.5f, Random.Shared.NextFloat(-0.2f, 0.2f), 0);
     }
 
     IEnumerable<int> FollowPlayer(float acceleration = 1f)

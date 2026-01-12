@@ -12,6 +12,7 @@ public class GameRoot : Game
     public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
     public static Vector2 ScreenSize => new Vector2(Viewport.Width, Viewport.Height);
     public static GameTime GameTime { get; private set; }
+    public static ParticleManager<ParticleState> ParticleManager { get; private set; }
 
     private GraphicsDeviceManager graphics;
     private SpriteBatch spriteBatch;
@@ -39,6 +40,8 @@ public class GameRoot : Game
     protected override void Initialize()
     {
         base.Initialize();
+
+        ParticleManager = new ParticleManager<ParticleState>(1024 * 20, ParticleState.UpdateParticle);
 
         EntityManager.Add(PlayerShip.Instance);
 
@@ -76,9 +79,10 @@ public class GameRoot : Game
 
         if (!paused)
         {
-            PlayerStatus.Update();
             EntityManager.Update();
             EnemySpawner.Update();
+            ParticleManager.Update();
+            PlayerStatus.Update();
         }
 
         base.Update(gameTime);
@@ -97,6 +101,10 @@ public class GameRoot : Game
         // Draw entities. Sort by texture for better batching.
         spriteBatch.Begin(SpriteSortMode.Texture, BlendState.Additive);
         EntityManager.Draw(spriteBatch);
+        spriteBatch.End();
+
+        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+        ParticleManager.Draw(spriteBatch);
         spriteBatch.End();
 
         if (useBloom)

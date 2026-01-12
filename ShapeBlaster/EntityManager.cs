@@ -12,6 +12,8 @@ static class EntityManager
     static List<Bullet> bullets = [];
     static List<BlackHole> blackHoles = [];
 
+    public static IEnumerable<BlackHole> BlackHoles => blackHoles;
+
     static bool isUpdating;
     static List<Entity> addedEntities = [];
 
