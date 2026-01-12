@@ -45,16 +45,6 @@ class PlayerShip : Entity
             return;
         }
 
-        const float speed = 8;
-        Velocity = speed * Input.GetMovementDirection();
-        Position += Velocity;
-        Position = Vector2.Clamp(Position, Size / 2, GameRoot.ScreenSize - Size / 2);
-
-        if (Velocity.LengthSquared() > 0)
-        {
-            Orientation = Velocity.Angle;
-        }
-
         var aim = Input.GetAimDirection();
         if (aim.LengthSquared() > 0 && cooldownRemaining <= 0)
         {
@@ -78,6 +68,18 @@ class PlayerShip : Entity
         {
             cooldownRemaining--;
         }
+
+        const float speed = 8;
+        Velocity += speed * Input.GetMovementDirection();
+        Position += Velocity;
+        Position = Vector2.Clamp(Position, Size / 2, GameRoot.ScreenSize - Size / 2);
+
+        if (Velocity.LengthSquared() > 0)
+        {
+            Orientation = Velocity.Angle;
+        }
+
+        Velocity = Vector2.Zero;
     }
 
     public override void Draw(SpriteBatch spriteBatch)

@@ -8,10 +8,9 @@
 #endregion
 
 #region Using Statements
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 #endregion
 
 namespace BloomPostprocess
@@ -82,8 +81,8 @@ namespace BloomPostprocess
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             bloomExtractEffect = this.Game.Content.Load<Effect>("Shaders/BloomExtract");
-			bloomCombineEffect = this.Game.Content.Load<Effect>("Shaders/BloomCombine");
-			gaussianBlurEffect = this.Game.Content.Load<Effect>("Shaders/GaussianBlur");
+            bloomCombineEffect = this.Game.Content.Load<Effect>("Shaders/BloomCombine");
+            gaussianBlurEffect = this.Game.Content.Load<Effect>("Shaders/GaussianBlur");
 
             // Look up the resolution and format of our main backbuffer.
             PresentationParameters pp = GraphicsDevice.PresentationParameters;

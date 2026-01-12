@@ -63,7 +63,7 @@ namespace BloomPostprocess
             BloomSaturation = bloomSaturation;
             BaseSaturation = baseSaturation;
         }
-        
+
 
         /// <summary>
         /// Table of preset bloom settings, used by the sample program.

@@ -5,7 +5,8 @@ namespace ShapeBlaster;
 
 static class EnemySpawner
 {
-    static float inverseSpawnChance = 60;
+    static float inverseSpawnChance = 90;
+    static float inverseBlackHoleChance = 600;
 
     public static void Update()
     {
@@ -18,6 +19,16 @@ static class EnemySpawner
             if (Random.Shared.Next((int)inverseSpawnChance) == 0)
             {
                 EntityManager.Add(Enemy.CreateWanderer(GetSpawnPosition()));
+            }
+            if (EntityManager.BlackHoleCount < 2 && Random.Shared.Next((int)inverseBlackHoleChance) == 0)
+            {
+                EntityManager.Add(new BlackHole(GetSpawnPosition()));
+            }
+
+            // slowly increase the spawn rate as time progresses
+            if (inverseSpawnChance > 30)
+            {
+                inverseSpawnChance -= 0.005f;
             }
         }
 

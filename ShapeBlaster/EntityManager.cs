@@ -10,11 +10,13 @@ static class EntityManager
     static List<Entity> entities = [];
     static List<Enemy> enemies = [];
     static List<Bullet> bullets = [];
+    static List<BlackHole> blackHoles = [];
 
     static bool isUpdating;
     static List<Entity> addedEntities = [];
 
     public static int Count => entities.Count;
+    public static int BlackHoleCount => blackHoles.Count;
 
     public static void Add(Entity entity)
     {
@@ -38,6 +40,10 @@ static class EntityManager
         else if (entity is Enemy)
         {
             enemies.Add(entity as Enemy);
+        }
+        else if (entity is BlackHole)
+        {
+            blackHoles.Add(entity as BlackHole);
         }
     }
 
@@ -64,6 +70,7 @@ static class EntityManager
         entities = [.. entities.Where(x => !x.IsExpired)];
         bullets = [.. bullets.Where(x => !x.IsExpired)];
         enemies = [.. enemies.Where(x => !x.IsExpired)];
+        blackHoles = [.. blackHoles.Where(x => !x.IsExpired)];
     }
 
     static void HandleCollisions()
@@ -99,18 +106,54 @@ static class EntityManager
         {
             if (enemies[i].IsActive && IsColliding(PlayerShip.Instance, enemies[i]))
             {
-                PlayerShip.Instance.Kill();
-                enemies.ForEach(x => x.WasShot());
-                EnemySpawner.Reset();
+                KillPlayer();
                 break;
             }
         }
+
+        // handle collisions with black holes 
+        for (var i = 0; i < blackHoles.Count; i++)
+        {
+            for (var j = 0; j < enemies.Count; j++)
+            {
+                if (enemies[j].IsActive && IsColliding(blackHoles[i], enemies[j]))
+                {
+                    enemies[j].WasShot();
+                }
+            }
+            for (var j = 0; j < bullets.Count; j++)
+            {
+                if (IsColliding(blackHoles[i], bullets[j]))
+                {
+                    bullets[j].IsExpired = true;
+                    blackHoles[i].WasShot();
+                }
+            }
+            if (IsColliding(PlayerShip.Instance, blackHoles[i]))
+            {
+                KillPlayer();
+                break;
+            }
+        }
+    }
+
+    private static void KillPlayer()
+    {
+        PlayerShip.Instance.Kill();
+        enemies.ForEach(x => x.WasShot());
+        blackHoles.ForEach(x => x.Kill());
+        EnemySpawner.Reset();
     }
 
     private static bool IsColliding(Entity a, Entity b)
     {
         var radius = a.Radius + b.Radius;
         return !a.IsExpired && !b.IsExpired && Vector2.DistanceSquared(a.Position, b.Position) < radius * radius;
+    }
+
+    public static IEnumerable<Entity> GetNearbyEntities(Vector2 position, float radius)
+    {
+        return entities.Where(x => Vector2.DistanceSquared(position, x.Position) < radius * radius);
     }
 
     public static void Draw(SpriteBatch spriteBatch)
