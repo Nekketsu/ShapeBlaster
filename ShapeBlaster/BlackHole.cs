@@ -57,6 +57,8 @@ class BlackHole : Entity
 
         // rotate the spray direction 
         sprayAngle -= MathHelper.TwoPi / 50f;
+
+        GameRoot.Grid.ApplyImplosiveForce(float.Sin(sprayAngle / 2) * 10 + 20, Position, 200);
     }
 
     public void WasShot()

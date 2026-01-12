@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ShapeBlaster;
@@ -14,6 +15,7 @@ static class Art
 
     public static Texture2D LineParticle { get; private set; }
     public static Texture2D Glow { get; private set; }
+    public static Texture2D Pixel { get; private set; }		// a single white pixel
 
     public static SpriteFont Font { get; private set; }
 
@@ -28,6 +30,9 @@ static class Art
 
         LineParticle = content.Load<Texture2D>("Art/Laser");
         Glow = content.Load<Texture2D>("Art/Glow");
+
+        Pixel = new Texture2D(Player.GraphicsDevice, 1, 1);
+        Pixel.SetData([Color.White]);
 
         Font = content.Load<SpriteFont>("Fonts/Font");
     }

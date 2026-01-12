@@ -22,12 +22,7 @@ class Bullet : Entity
         }
 
         Position += Velocity;
-
-        // delete bullets that go off-screen 
-        if (!GameRoot.Viewport.Bounds.Contains(Position.ToPoint()))
-        {
-            IsExpired = true;
-        }
+        GameRoot.Grid.ApplyExplosiveForce(0.5f * Velocity.Length(), Position, 80);
 
         // delete bullets that go off-screen 
         if (!GameRoot.Viewport.Bounds.Contains(Position.ToPoint()))

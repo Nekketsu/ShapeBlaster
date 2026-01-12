@@ -40,6 +40,7 @@ class PlayerShip : Entity
                     PlayerStatus.Reset();
                     Position = GameRoot.ScreenSize / 2;
                 }
+                GameRoot.Grid.ApplyDirectedForce(new Vector3(0, 0, 5000), new Vector3(Position, 0), 50);
             }
 
             return;

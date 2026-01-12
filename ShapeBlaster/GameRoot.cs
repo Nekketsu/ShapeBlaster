@@ -13,6 +13,7 @@ public class GameRoot : Game
     public static Vector2 ScreenSize => new Vector2(Viewport.Width, Viewport.Height);
     public static GameTime GameTime { get; private set; }
     public static ParticleManager<ParticleState> ParticleManager { get; private set; }
+    public static Grid Grid { get; private set; }
 
     private GraphicsDeviceManager graphics;
     private SpriteBatch spriteBatch;
@@ -29,8 +30,8 @@ public class GameRoot : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
-        graphics.PreferredBackBufferWidth = 800;
-        graphics.PreferredBackBufferHeight = 600;
+        graphics.PreferredBackBufferWidth = 1920;
+        graphics.PreferredBackBufferHeight = 1080;
 
         bloom = new BloomComponent(this);
         Components.Add(bloom);
@@ -42,6 +43,10 @@ public class GameRoot : Game
         base.Initialize();
 
         ParticleManager = new ParticleManager<ParticleState>(1024 * 20, ParticleState.UpdateParticle);
+
+        const int maxGridPoints = 1600;
+        var gridSpacing = new Vector2(float.Sqrt(Viewport.Width * Viewport.Height / maxGridPoints));
+        Grid = new Grid(Viewport.Bounds, gridSpacing);
 
         EntityManager.Add(PlayerShip.Instance);
 
@@ -83,6 +88,7 @@ public class GameRoot : Game
             EnemySpawner.Update();
             ParticleManager.Update();
             PlayerStatus.Update();
+            Grid.Update();
         }
 
         base.Update(gameTime);
@@ -104,6 +110,7 @@ public class GameRoot : Game
         spriteBatch.End();
 
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+        Grid.Draw(spriteBatch);
         ParticleManager.Draw(spriteBatch);
         spriteBatch.End();
 
